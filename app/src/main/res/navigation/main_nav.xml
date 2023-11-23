@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/main_login">
+
+    <fragment
+        android:id="@+id/main_login"
+        android:name="com.mooncode.budgetbuddy.main_login"
+        android:label="fragment_main_login"
+        tools:layout="@layout/fragment_main_login" >
+        <action
+            android:id="@+id/action_main_login_to_main_register"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_register" />
+        <action
+            android:id="@+id/action_main_login_to_main_menu"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_menu" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_register"
+        android:name="com.mooncode.budgetbuddy.main_register"
+        android:label="fragment_main_register"
+        tools:layout="@layout/fragment_main_register" >
+        <action
+            android:id="@+id/action_main_register_to_main_login"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_login" />
+        <action
+            android:id="@+id/action_main_register_to_main_menu"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_menu" />
+        <action
+            android:id="@+id/action_main_register_to_main_termsAndConditions"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_termsAndConditions" />
+        <action
+            android:id="@+id/action_main_register_to_main_profile"
+            app:destination="@id/main_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_menu"
+        android:name="com.mooncode.budgetbuddy.main_menu"
+        android:label="fragment_main_menu"
+        tools:layout="@layout/fragment_main_menu" >
+        <action
+            android:id="@+id/action_main_menu_to_main_calendarGoal"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_calendarGoal" />
+        <action
+            android:id="@+id/action_main_menu_to_main_budgetGoal"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_budgetGoal" />
+        <action
+            android:id="@+id/action_main_menu_to_main_cashIn"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_cashIn" />
+        <action
+            android:id="@+id/action_main_menu_to_main_cashOut"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_cashOut" />
+        <action
+            android:id="@+id/action_main_menu_to_main_profile"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_profile" />
+        <action
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            android:id="@+id/action_main_menu_to_main_lock"
+            app:destination="@id/main_lock" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_calendarGoal"
+        android:name="com.mooncode.budgetbuddy.main_savingsGoal"
+        android:label="fragment_main_calendar_goal"
+        tools:layout="@layout/fragment_main_savings_goal" >
+        <action
+            android:id="@+id/action_main_calendarGoal_to_main_menu"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_menu" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_budgetGoal"
+        android:name="com.mooncode.budgetbuddy.main_budgetGoal"
+        android:label="fragment_main_budget_goal"
+        tools:layout="@layout/fragment_main_budget_goal" >
+        <action
+            android:id="@+id/action_main_budgetGoal_to_main_menu"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_menu" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_cashIn"
+        android:name="com.mooncode.budgetbuddy.main_cashIn"
+        android:label="fragment_main_cash_in"
+        tools:layout="@layout/fragment_main_cash_in" >
+        <action
+            android:id="@+id/action_main_cashIn_to_main_menu"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_menu" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_cashOut"
+        android:name="com.mooncode.budgetbuddy.main_cashOut"
+        android:label="fragment_main_cash_out"
+        tools:layout="@layout/fragment_main_cash_out" >
+        <action
+            android:id="@+id/action_main_cashOut_to_main_menu"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_menu" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_profile"
+        android:name="com.mooncode.budgetbuddy.main_profile"
+        android:label="fragment_main_profile"
+        tools:layout="@layout/fragment_main_profile" >
+        <action
+            android:id="@+id/action_main_profile_to_main_menu"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_menu" />
+        <action
+            android:id="@+id/action_main_profile_to_main_accountUpdate"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_accountUpdate" />
+        <action
+            android:id="@+id/action_main_profile_to_main_login"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_login" />
+        <action
+            android:id="@+id/action_main_profile_to_main_updatePassword"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_updatePassword" />
+        <action
+            android:id="@+id/action_main_profile_to_main_removeAccount"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_removeAccount" />
+        <action
+            android:id="@+id/action_main_profile_to_main_register"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_register" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_termsAndConditions"
+        android:name="com.mooncode.budgetbuddy.main_termsAndConditions"
+        android:label="fragment_main_terms_and_conditions"
+        tools:layout="@layout/fragment_main_terms_and_conditions" >
+        <action
+            android:id="@+id/action_main_termsAndConditions_to_main_register"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_register" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_lock"
+        android:name="com.mooncode.budgetbuddy.main_lock"
+        android:label="fragment_main_lock"
+        tools:layout="@layout/fragment_main_lock" >
+        <action
+            android:id="@+id/action_main_lock_to_main_menu"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_menu" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_accountUpdate"
+        android:name="com.mooncode.budgetbuddy.main_accountUpdate"
+        android:label="fragment_main_account_update"
+        tools:layout="@layout/fragment_main_account_update" >
+        <action
+            android:id="@+id/action_main_accountUpdate_to_main_profile"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_updatePassword"
+        android:name="com.mooncode.budgetbuddy.main_updatePassword"
+        android:label="fragment_main_update_password"
+        tools:layout="@layout/fragment_main_update_password" >
+        <action
+            android:id="@+id/action_main_updatePassword_to_main_profile"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_removeAccount"
+        android:name="com.mooncode.budgetbuddy.main_removeAccount"
+        android:label="fragment_main_remove_account"
+        tools:layout="@layout/fragment_main_remove_account" >
+        <action
+            android:id="@+id/action_main_removeAccount_to_main_profile"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_profile" />
+        <action
+            android:id="@+id/action_main_removeAccount_to_main_login"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_right"
+            app:popExitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:destination="@id/main_login" />
+    </fragment>
+</navigation>

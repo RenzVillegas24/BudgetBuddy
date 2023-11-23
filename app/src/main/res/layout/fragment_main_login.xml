@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/main_login"
+    tools:context=".main_login">
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:rowCount="2">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_rowWeight="1"
+            android:background="@drawable/ic_launcher_background"
+            android:alpha="0.5"/>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_rowWeight="1">
+
+        </LinearLayout>
+
+
+    </GridLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:rowCount="2">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_rowWeight="3">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:layout_row="0"
+                android:layout_gravity="center"
+                android:layout_column="0"
+                android:src="@drawable/logo_full"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_rowWeight="8"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="30dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="10dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/login"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:padding="10dp"
+                            android:textSize="22sp"/>
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="20dp" />
+
+                        <!-- Creates text field for username -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            android:layout_gravity="center_horizontal">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:digits="@string/possibleUsername"
+                                android:id="@+id/txtUsername"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_horizontal"
+                                android:ems="10"
+                                android:hint="@string/username"
+                                android:inputType="textFilter" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="10dp" />
+
+                        <!-- Creates text field for password -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="70dp"
+                            app:passwordToggleEnabled="true"
+                            android:layout_gravity="center_horizontal">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:digits="@string/possibleUsername"
+                                android:id="@+id/txtPassword"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center_horizontal"
+                                android:ems="10"
+                                android:hint="@string/password"
+                                android:inputType="textPassword" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp" />
+
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="-55dp"
+                android:layout_marginLeft="70dp"
+                android:layout_marginRight="70dp"
+                android:text="@string/login"
+                android:elevation="100dp"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="30dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/don_t_have_an_account_register_here"
+                    android:textSize="12sp"
+                    android:layout_margin="10dp"
+                    />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginRight="70dp"
+                    android:text="@string/register"
+                    style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+                    />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </GridLayout>
+
+</RelativeLayout >

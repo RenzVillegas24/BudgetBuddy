@@ -40,7 +40,8 @@ android {
 dependencies {
     implementation 'com.google.firebase:firebase-bom:32.6.0'
 
-//    implementation 'com.github.prolificinteractive:material-calendarview:2.0.1'
+    implementation 'io.github.g0dkar:qrcode-kotlin:4.0.7'
+    implementation 'com.google.android.gms:play-services-vision:20.1.2'
     implementation 'com.github.shuhart:material-calendar:1.1.0'
 
     implementation 'com.google.firebase:firebase-analytics-ktx:21.5.0'

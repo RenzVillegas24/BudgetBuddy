@@ -1,5 +1,6 @@
 package com.mooncode.budgetbuddy
 
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -14,10 +15,12 @@ import android.widget.Button
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.core.view.children
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -71,8 +74,11 @@ class main_savingsGoal : Fragment() {
         // set the calendar to range selection mode
         val pager = ((((calendarView.children.elementAt(0) as PagerContainer).children.first() as CustomPager).adapter) as PagerIndicatorAdapter)
 
-        val colPrimary = requireContext().obtainStyledAttributes(TypedValue().data, intArrayOf(androidx.appcompat.R.attr.colorPrimary)).getColor(0, 0)
-        val colSub = resources.getColor(R.color.mcv_selectionRangeColor)
+        val colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary  , Color.BLACK)
+
+        @ColorInt val colSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorSecondaryContainer, Color.BLACK)
+
+
 
         pager.defaultButtonBackgroundColor = colSub
         pager.selectedButtonBackgroundColor = colPrimary

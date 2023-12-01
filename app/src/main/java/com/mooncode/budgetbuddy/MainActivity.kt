@@ -1,19 +1,18 @@
 package com.mooncode.budgetbuddy
 
 import android.content.Context
-import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.view.WindowManager
-import androidx.core.view.WindowCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +27,19 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        val data = intent.data.toString()
+        val dataArgs = data.replace("BudgetBuddy://", "")
+        when (dataArgs) {
+            "transfer" -> {}
+        }
+
+        ActivityCompat.requestPermissions(
+            this@MainActivity,
+            arrayOf(android.Manifest.permission.CAMERA),
+            1
+        )
 
         if (!isNetworkAvailable(this)){
             MaterialAlertDialogBuilder(this)
@@ -50,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun isNetworkAvailable(context: Context?): Boolean {
+    private fun isNetworkAvailable(context: Context?): Boolean {
         if (context == null) return false
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

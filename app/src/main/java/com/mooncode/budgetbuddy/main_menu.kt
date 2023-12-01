@@ -38,6 +38,7 @@ class main_menu : Fragment() {
         val btnCalendarGoal = view.findViewById<Button>(R.id.btnCalendarGoal)
         val btnBudgetGoal = view.findViewById<Button>(R.id.btnBudgetGoal)
         val btnLock = view.findViewById<Button>(R.id.btnLock)
+        val btnTransfer = view.findViewById<Button>(R.id.btnTransfer)
         val btnProfile = view.findViewById<Button>(R.id.btnProfile)
 
 
@@ -70,6 +71,10 @@ class main_menu : Fragment() {
         }
         btnLock.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_lock)
+        }
+
+        btnTransfer.setOnClickListener {
+            findNavController().navigate(R.id.action_main_menu_to_main_transfer)
         }
 
         btnProfile.setOnClickListener {

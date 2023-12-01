@@ -1,6 +1,7 @@
 package com.mooncode.budgetbuddy
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -9,7 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.core.view.children
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -45,11 +49,12 @@ class main_lock : Fragment() {
         val txtLockTitle = view.findViewById<TextView>(R.id.txtLockTitle)
         val calendarSetLock = view.findViewById<MaterialCalendarView>(R.id.calendarSetLock)
         val btnLock = view.findViewById<TextView>(R.id.btnLock)
+        val btnBack = view.findViewById<MaterialButton>(R.id.btnBack)
 
         var isLocked = false
 
-        colPrimary = requireContext().obtainStyledAttributes(TypedValue().data, intArrayOf(androidx.appcompat.R.attr.colorPrimary)).getColor(0, 0)
-        colSub = resources.getColor(R.color.mcv_selectionRangeColor)
+        colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary  , Color.BLACK)
+        colSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorSecondaryContainer, Color.BLACK)
 
 
         val pager = ((((calendarSetLock.children.elementAt(0) as PagerContainer).children.first() as CustomPager).adapter) as PagerIndicatorAdapter)
@@ -118,6 +123,10 @@ class main_lock : Fragment() {
                     .show()
             }
 
+        }
+
+        btnBack.setOnClickListener {
+            requireActivity().onBackPressed()
         }
 
         databaseEvent = object: ValueEventListener {

@@ -102,6 +102,13 @@
             app:popEnterAnim="@anim/slide_in_left"
             android:id="@+id/action_main_menu_to_main_lock"
             app:destination="@id/main_lock" />
+        <action
+            android:id="@+id/action_main_menu_to_main_transfer"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:destination="@id/main_transfer" />
     </fragment>
     <fragment
         android:id="@+id/main_calendarGoal"
@@ -274,5 +281,14 @@
             app:popExitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_right"
             app:destination="@id/main_login" />
+    </fragment>
+    <fragment
+        android:id="@+id/main_transfer"
+        android:name="com.mooncode.budgetbuddy.main_transfer"
+        android:label="fragment_main_transfer"
+        tools:layout="@layout/fragment_main_transfer" >
+        <action
+            android:id="@+id/action_main_transfer_to_main_menu3"
+            app:destination="@id/main_menu" />
     </fragment>
 </navigation>

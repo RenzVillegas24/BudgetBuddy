@@ -22,10 +22,17 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 
-
+/**
+ * A simple [Fragment] subclass.
+ * Use the [main_accountUpdate.newInstance] factory method to
+ * create an instance of this fragment.
+ *
+ * This fragment is used to update the user's profile
+ */
 class main_accountUpdate : Fragment() {
     private lateinit var databaseEvent: ValueEventListener
 
+    // Override the onCreateView method to inflate the proper view
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,6 +40,7 @@ class main_accountUpdate : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main_account_update, container, false)
 
+        // Get all the elements from the view
         val btnRegister = view.findViewById<Button>(R.id.btnRegister)
         val btnBack = view.findViewById<Button>(R.id.btnBack)
         val txtFirstName = view.findViewById<TextInputEditText>(R.id.txtFirstName)
@@ -45,10 +53,15 @@ class main_accountUpdate : Fragment() {
         val txtPassword = view.findViewById<TextInputEditText>(R.id.txtPassword)
         val txtConfPassword = view.findViewById<TextInputEditText>(R.id.txtConfPassword)
 
+        // Stores the selected birthday
         var selected_birthDay: Long? = null
 
 
+        // Store the database event listener
+        // This is used to add/remove the event listener when the fragment is stopped
+        // Used for updating the UI when the data from the firebase is changed
         databaseEvent = object: ValueEventListener {
+            // This is called when the data in the database is changed
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("Firebase", "Data changed")
 
@@ -62,33 +75,37 @@ class main_accountUpdate : Fragment() {
                 txtEmail.setText(snapshot.child("email").value.toString())
             }
 
+            // This is called when there is an error in the database
             override fun onCancelled(error: DatabaseError) {
                 Log.e("Firebase", error.message)
             }
         }
 
-
+        // Set the onClickListener for the birthday text field
+        // Show the date picker when the text field is clicked
         txtBirthday.setOnClickListener {
             it as TextInputEditText
 
             val constraint = CalendarConstraints.Builder()
             val calendar = Calendar.getInstance()
 
+            // Set the constraints for the date picker
+
+            // The user must be at least 13 years old
             calendar.add(Calendar.YEAR, -13)
             constraint.setEnd(calendar.timeInMillis)
-
             constraint.setOpenAt(if (it.text.isNullOrBlank()) calendar.timeInMillis else selected_birthDay!!)
 
-
+            // The user must be at most 150 years old
             calendar.add(Calendar.YEAR, -137)
             constraint.setStart(calendar.timeInMillis)
 
-
+            // Create the date picker
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setCalendarConstraints(constraint.build())
                 .setTitleText("Select your birthday")
 
-
+            // Set the selected date if the text field is not empty
             if (!it.text.isNullOrBlank())
                 datePicker.setSelection(selected_birthDay)
 
@@ -97,6 +114,7 @@ class main_accountUpdate : Fragment() {
 
             datePickerBuilder.show(requireActivity().supportFragmentManager, "DatePicker")
 
+            // Set the selected date when the user clicks the positive button
             datePickerBuilder.addOnPositiveButtonClickListener {it2 ->
                 val date = Date(it2)
                 val cal = Calendar.getInstance()
@@ -107,11 +125,12 @@ class main_accountUpdate : Fragment() {
             }
         }
 
+        // Set the onClickListener for the register button
         btnRegister.setOnClickListener {
-
             btnBack.isEnabled = false
             btnRegister.isEnabled = false
 
+            // Check if the user has filled up all the fields
             if (txtFirstName.text.isNullOrBlank() ||
                 txtMiddleName.text.isNullOrBlank() ||
                 txtLastName.text.isNullOrBlank() ||
@@ -122,6 +141,7 @@ class main_accountUpdate : Fragment() {
                 txtPassword.text.isNullOrBlank() ||
                 txtConfPassword.text.isNullOrBlank()) {
 
+                // Show an error message if the user has not filled up all the fields
                 MaterialAlertDialogBuilder(requireContext())
                     .setMessage("Please fill up all the fields")
                     .setPositiveButton("Try Again"){ _, _ ->
@@ -133,8 +153,9 @@ class main_accountUpdate : Fragment() {
 
                 return@setOnClickListener
             } else {
-
+                // Check if the password and confirmation password matches
                 if (txtPassword.text.toString() != txtConfPassword.text.toString()) {
+                    // Show an error message if the password and confirmation password does not match
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage("Password and Confirmation Password does not match")
                         .setPositiveButton("Try Again"){ _, _ ->
@@ -147,9 +168,14 @@ class main_accountUpdate : Fragment() {
                     return@setOnClickListener
                 }
 
+                // Update the user's profile
+                // This is done by updating the data in the firebase database
                 databaseReference!!
+                    // Get the current user's id
                     .child(auth!!.currentUser!!.uid)
+                    // Update the user's data
                     .updateChildren(
+                        // Create a map of the user's data
                         hashMapOf(
                         "firstName" to txtFirstName.text.toString(),
                         "middleName" to txtMiddleName.text.toString(),
@@ -160,7 +186,9 @@ class main_accountUpdate : Fragment() {
                         "email" to txtEmail.text.toString(),
                         "password" to txtPassword.text.toString()).toMap()
                     )
+                    // Add a success listener
                     .addOnSuccessListener {
+                        // Show a success message if the update is successful
                         MaterialAlertDialogBuilder(requireActivity())
                             .setTitle("Account Update")
                             .setMessage("Account successfully updated!")
@@ -172,7 +200,9 @@ class main_accountUpdate : Fragment() {
 
                         Log.d("update", "success")
                     }
+                    // Add a failure listener
                     .addOnFailureListener {
+                        // Show an error message if the update is not successful
                         MaterialAlertDialogBuilder(requireActivity())
                             .setTitle("Account Update")
                             .setMessage("Account creation failed. Please try again.")
@@ -185,25 +215,21 @@ class main_accountUpdate : Fragment() {
 
                         Log.d("update", "failed")
                     }
-
-
-
             }
-
-
-
         }
 
+        // Set the onClickListener for the back button
         btnBack.setOnClickListener {
+            // Go back to the previous fragment
             findNavController().popBackStack()
         }
-
-
 
 
         return view
     }
 
+    // Every time the fragment is started, add the event listener
+    // This is implemented in every fragment that uses the firebase database
     override fun onStart() {
         databaseReference!!
             .child(auth!!.currentUser!!.uid)
@@ -214,6 +240,8 @@ class main_accountUpdate : Fragment() {
         super.onStart()
     }
 
+    // Every time the fragment is stopped, remove the event listener
+    // This is implemented in every fragment that uses the firebase database
     override fun onStop() {
         super.onStop()
         if (auth!!.currentUser == null) {

@@ -16,7 +16,6 @@ class main_termsAndConditions : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_main_terms_and_conditions, container, false)
-
         var btnBack = view.findViewById<Button>(R.id.btnBack)
 
         btnBack.setOnClickListener {

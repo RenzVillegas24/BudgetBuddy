@@ -26,14 +26,15 @@ class main_updatePassword : Fragment() {
         val txtNewPassword = view.findViewById<TextInputEditText>(R.id.txtNewPassword)
         val txtConfNewPassword = view.findViewById<TextInputEditText>(R.id.txtConfNewPassword)
 
-
+        // Get database reference
         btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
-
+        // Get database reference
         btnUpdate.setOnClickListener {
             btnUpdate.isEnabled = false
             btnBack.isEnabled = false
+            // Check if passwords match
             if (txtNewPassword.text.toString() == txtConfNewPassword.text.toString()) {
                 databaseReference!!
                     .child(auth!!.currentUser!!.uid)
@@ -41,6 +42,7 @@ class main_updatePassword : Fragment() {
                     .get()
                     .addOnSuccessListener {
                         if (it.value.toString() != txtCurrentPassword.text.toString()) {
+                            // Current password is incorrect
                             MaterialAlertDialogBuilder(requireContext())
                                 .setTitle("Error")
                                 .setMessage("Current password is incorrect")
@@ -51,23 +53,27 @@ class main_updatePassword : Fragment() {
                                 }
                                 .show()
                         } else {
-                            var credential = EmailAuthProvider.getCredential(
+                            // Current password is correct
+                            val credential = EmailAuthProvider.getCredential(
                                 auth!!.currentUser!!.email.toString(),
                                 txtCurrentPassword.text.toString())
 
-
+                            // Re-authenticate user
                             auth!!.currentUser!!.reauthenticate(credential)
                                 .addOnCompleteListener {task ->
                                     if (task.isSuccessful){
+                                        // Update password in authentication
                                         auth!!.currentUser!!.updatePassword(
                                             txtNewPassword.text.toString())
                                             .addOnCompleteListener { task2 ->
                                                 if (task2.isSuccessful) {
+                                                    // Update password in database
                                                     databaseReference!!
                                                         .child(auth!!.currentUser!!.uid)
                                                         .child("password")
                                                         .setValue(txtNewPassword.text.toString())
                                                         .addOnSuccessListener {
+                                                            // Password updated successfully
                                                             MaterialAlertDialogBuilder(requireContext())
                                                                 .setTitle("Success")
                                                                 .setMessage("Password updated successfully")
@@ -79,6 +85,7 @@ class main_updatePassword : Fragment() {
                                                                 .show()
                                                         }
                                                         .addOnFailureListener {
+                                                            // Password update failed
                                                             MaterialAlertDialogBuilder(requireContext())
                                                                 .setTitle("Error")
                                                                 .setMessage("Password update failed")
@@ -89,8 +96,8 @@ class main_updatePassword : Fragment() {
                                                                 }
                                                                 .show()
                                                         }
-
                                                 } else {
+                                                    // Password update failed
                                                     MaterialAlertDialogBuilder(requireContext())
                                                         .setTitle("Error")
                                                         .setMessage("Password update failed")
@@ -102,8 +109,8 @@ class main_updatePassword : Fragment() {
                                                         .show()
                                                 }
                                             }
-
                                     } else {
+                                        // Current password is incorrect
                                         MaterialAlertDialogBuilder(requireContext())
                                             .setTitle("Error")
                                             .setMessage("Current password is incorrect")
@@ -118,6 +125,7 @@ class main_updatePassword : Fragment() {
                         }
                     }
             } else {
+                // Passwords do not match
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Error")
                     .setMessage("Passwords do not match")
@@ -129,10 +137,6 @@ class main_updatePassword : Fragment() {
                     .show()
             }
         }
-
-
-
-
 
         return view
     }

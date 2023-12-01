@@ -34,6 +34,7 @@ class main_removeAccount : Fragment() {
             btnConfirm.isEnabled = false
             btnBack.isEnabled = false
             if (txtPassword.text.toString() == txtConfPassword.text.toString()) {
+                // check if password is correct
                 databaseReference!!
                     .child(auth!!.currentUser!!.uid)
                     .child("password")
@@ -50,28 +51,31 @@ class main_removeAccount : Fragment() {
                                 }
                                 .show()
                         } else {
+                            // confirm account deletion
                             MaterialAlertDialogBuilder(requireContext())
                                 .setTitle("Warning")
                                 .setMessage("Are you sure you want to delete your account?")
                                 .setPositiveButton("Yes") { dialog, which ->
+                                    // delete account
                                     var credential = EmailAuthProvider.getCredential(
                                         auth!!.currentUser!!.email.toString(),
                                         txtPassword.text.toString())
 
-
+                                    // reauthenticate user
                                     auth!!.currentUser!!.reauthenticate(credential)
                                         .addOnCompleteListener { task ->
                                             if (task.isSuccessful) {
+                                                // delete user from database
                                                 databaseReference!!.child(auth!!.currentUser!!.uid)
                                                     .removeValue()
                                                     .addOnCompleteListener { task ->
                                                         if (task.isSuccessful) {
+                                                            // delete user from authentication
                                                             auth!!.currentUser!!.delete()
                                                                 .addOnCompleteListener { task ->
                                                                     if (task.isSuccessful) {
-                                                                        MaterialAlertDialogBuilder(
-                                                                            requireContext()
-                                                                        )
+                                                                        // go to login page
+                                                                        MaterialAlertDialogBuilder(requireContext())
                                                                             .setTitle("Success")
                                                                             .setMessage("Account deleted successfully")
                                                                             .setPositiveButton("OK") { dialog, which ->
@@ -90,6 +94,7 @@ class main_removeAccount : Fragment() {
                                                         }
                                                     }
                                                     .addOnFailureListener{
+                                                        // error happened while deleting account
                                                         MaterialAlertDialogBuilder(requireContext())
                                                             .setTitle("Error")
                                                             .setMessage("Error happened while deleting account")
@@ -101,6 +106,7 @@ class main_removeAccount : Fragment() {
                                                             .show()
                                                     }
                                             } else {
+                                                // error happened while deleting account
                                                 MaterialAlertDialogBuilder(requireContext())
                                                     .setTitle("Error")
                                                     .setMessage("Error happened while deleting account")
@@ -122,6 +128,7 @@ class main_removeAccount : Fragment() {
                         }
                     }
                     .addOnFailureListener{
+                        // error happened while deleting account
                         MaterialAlertDialogBuilder(requireContext())
                             .setTitle("Error")
                             .setMessage("Password is incorrect")
@@ -133,6 +140,7 @@ class main_removeAccount : Fragment() {
                             .show()
                     }
             } else {
+                // password does not match
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Error")
                     .setMessage("Password does not match")

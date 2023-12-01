@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.view.children
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -34,6 +35,8 @@ import kotlin.properties.Delegates
 class main_lock : Fragment() {
     private var colPrimary by Delegates.notNull<Int>()
     private var colSub by Delegates.notNull<Int>()
+    private var colTextPrimary by Delegates.notNull<Int>()
+    private var colTextSub by Delegates.notNull<Int>()
     private lateinit var databaseEvent: ValueEventListener
 
 
@@ -55,25 +58,17 @@ class main_lock : Fragment() {
 
         colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary  , Color.BLACK)
         colSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorSecondaryContainer, Color.BLACK)
-
-
+        colTextPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorOnPrimary, Color.BLACK)
+        colTextSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorOnSecondaryContainer, Color.BLACK)
         val pager = ((((calendarSetLock.children.elementAt(0) as PagerContainer).children.first() as CustomPager).adapter) as PagerIndicatorAdapter)
 
+        // set the color of the pager
         pager.defaultButtonBackgroundColor = colSub
         pager.selectedButtonBackgroundColor = colPrimary
+        pager.defaultButtonTextColor = colTextSub
+        pager.selectedButtonTextColor = colTextPrimary
 
-        // check if the window is in light or dark mode
-        when (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) {
-            android.content.res.Configuration.UI_MODE_NIGHT_YES -> {
-                pager.defaultButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_dark)
-                pager.selectedButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_light)
-            }
-            android.content.res.Configuration.UI_MODE_NIGHT_NO -> {
-                pager.defaultButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_light)
-                pager.selectedButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_dark)
-            }
-        }
-
+        // configure the calendar
         calendarSetLock.selectionMode = MaterialCalendarView.SELECTION_MODE_RANGE
         calendarSetLock.selectRange(CalendarDay.today(), CalendarDay.today())
         calendarSetLock.state()?.edit()?.setMinimumDate(CalendarDay.today())?.commit()
@@ -83,6 +78,7 @@ class main_lock : Fragment() {
             }
         })
 
+        // if the user selects a date range, update the text
         calendarSetLock.addOnRangeSelectedListener(object: OnRangeSelectedListener {
             override fun onRangeSelected(widget: MaterialCalendarView, dates: List<CalendarDay>) {
                 txtSelectedDate.text = dateGroup(calendarSetLock.selectedDates.map { itt -> itt.date.time})
@@ -90,8 +86,9 @@ class main_lock : Fragment() {
             }
         })
 
+        // set the lock button
         btnLock.setOnClickListener {
-
+            // if the account is locked, ask the user if they want to unlock it
             if (isLocked){
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Unlock Account")
@@ -106,11 +103,13 @@ class main_lock : Fragment() {
                     .setCancelable(false)
                     .show()
             }
+            // if the account is not locked, ask the user if they want to lock it
             else {
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Lock Account")
                     .setMessage("Are you sure you want to lock your account for ${calendarSetLock.selectedDates.size} day${if (calendarSetLock.selectedDates.size == 1) "" else "s" }?")
                     .setPositiveButton("Yes") { _, _ ->
+                        // set the lock
                        databaseReference!!
                            .child(auth!!.currentUser!!.uid)
                            .child("isLocked")
@@ -125,20 +124,24 @@ class main_lock : Fragment() {
 
         }
 
+
+        // set the back button
         btnBack.setOnClickListener {
-            requireActivity().onBackPressed()
+            findNavController().popBackStack()
         }
 
+        // set the database event listener
         databaseEvent = object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("Firebase", "Data changed")
 
+                // if the user is locked, update the text
                 if (snapshot.child("isLocked").exists()){
                     val from = snapshot.child("isLocked").child("from").value as Long
                     val to = snapshot.child("isLocked").child("to").value as Long
 
-
                     if (from == to || System.currentTimeMillis() in from..to){
+                        // if the date is in the future, set the lock
                         txtLockTitle.text = "Unlock"
                         btnLock.text = "Unlock Savings"
                         txtSelectedDateTitle.visibility = View.GONE
@@ -150,6 +153,7 @@ class main_lock : Fragment() {
 
                         isLocked = true
                     } else {
+                        // if the date has passed, remove the lock
                         databaseReference!!
                             .child(auth!!.currentUser!!.uid)
                             .child("isLocked")

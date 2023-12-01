@@ -29,17 +29,18 @@ class main_login : Fragment() {
 
         var btnLogin = view.findViewById<Button>(R.id.btnLogin)
         var btnRegister = view.findViewById<Button>(R.id.btnRegister)
-
         var txtUsername = view.findViewById<TextInputEditText>(R.id.txtUsername)
         var txtPassword = view.findViewById<TextInputEditText>(R.id.txtPassword)
 
+        // used for login
         btnLogin.setOnClickListener {
-
+            // start with enabling the buttons
             btnLogin.isEnabled = false
             btnRegister.isEnabled = false
 
-
+            // set the username
             val username = txtUsername.text.toString()
+            // check if the username is the same as the one in the database
             databaseReference!!
                 .orderByChild("username")
                 .equalTo(username)
@@ -48,13 +49,14 @@ class main_login : Fragment() {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             Log.i("", "dataSnapshot value = " + dataSnapshot.value)
 
-
+                            // check if the username exists
                             if (dataSnapshot.exists()) {
-                                // User Exists
+                                // get the email from the database using the username
                                 val email = dataSnapshot.children.first().child("email").value.toString()
 
                                 Log.d("", email)
 
+                                // sign in with the email and password
                                 auth!!.signInWithEmailAndPassword(email, txtPassword.text.toString())
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
@@ -81,16 +83,11 @@ class main_login : Fragment() {
                                                 }
                                                 .setCancelable(false)
                                                 .show()
-
-
                                         }
-
-
                                     }
 
                             } else {
                                 // User Not Yet Exists
-
                                 MaterialAlertDialogBuilder(requireActivity())
                                     .setTitle("Error")
                                     .setMessage("Username not exists. Please try other username.")
@@ -110,6 +107,8 @@ class main_login : Fragment() {
 
 
         }
+
+        // used for register
         btnRegister.setOnClickListener {
             findNavController().navigate(R.id.action_main_login_to_main_register)
         }

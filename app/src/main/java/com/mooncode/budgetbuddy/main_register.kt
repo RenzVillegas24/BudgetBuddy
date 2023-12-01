@@ -36,15 +36,19 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import kotlin.math.log
 
+// we used this to use only one fragment for creating new account from the user profile and from the login page
 private const val ARG_PARAM1 = "autoLogin"
 private const val ARG_PARAM2 = "loggedIn"
 
 class main_register : Fragment() {
+    // identifies if the account will be automatically logged in after creation
     private var autoLogin: Boolean? = null
+    // identifies if the account is created from the user profile or from the login page
     private var loggedIn: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // get the arguments passed from the user profile or from the login page
         arguments?.let {
             autoLogin = it.getBoolean(ARG_PARAM1)
             loggedIn = it.getBoolean(ARG_PARAM2)
@@ -75,6 +79,7 @@ class main_register : Fragment() {
 
         var selected_birthDay: Long? = null
 
+        // change the text of the button and the text below the button if the account is created from the user profile
         if (loggedIn != null && loggedIn!!) {
             btnLogin.text = "Back"
             tvBtnLowerText.text = "Want to go back to the profile?\nClick here to continue,"
@@ -82,12 +87,12 @@ class main_register : Fragment() {
 
         Log.d("autoLogin", autoLogin.toString() + " " + loggedIn.toString())
 
-
-
         btnRegister.setOnClickListener {
+            // disable the buttons to prevent multiple clicks
             btnLogin.isEnabled = false
             btnRegister.isEnabled = false
 
+            // check if all the fields are filled up
             if (txtFirstName.text.isNullOrBlank() ||
                 txtMiddleName.text.isNullOrBlank() ||
                 txtLastName.text.isNullOrBlank() ||
@@ -110,12 +115,13 @@ class main_register : Fragment() {
 
                 return@setOnClickListener
             } else {
-
+                // check if the password and the confirmation password matches
 
                 if (txtPassword.text.toString() != txtConfPassword.text.toString()) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage("Password and Confirmation Password does not match")
                         .setPositiveButton("Try Again"){    _, _ ->
+                            // re-enable the buttons
                             btnLogin.isEnabled = true
                             btnRegister.isEnabled = true
                         }
@@ -125,6 +131,7 @@ class main_register : Fragment() {
                     return@setOnClickListener
                 }
 
+                // check if the terms and conditions checkbox is checked
                 if (!cbTermsAndConditions.isChecked) {
                     MaterialAlertDialogBuilder(requireContext())
                         .setMessage("Please agree to the Terms and Conditions")
@@ -138,6 +145,7 @@ class main_register : Fragment() {
                     return@setOnClickListener
                 }
 
+                // check if the username already exists
                 databaseReference!!
                     .orderByChild("username")
                     .equalTo(txtUsername.text.toString())
@@ -148,6 +156,7 @@ class main_register : Fragment() {
                                     MaterialAlertDialogBuilder(requireContext())
                                         .setMessage("Username already exists. Please try other username.")
                                         .setPositiveButton("Try Again"){    _, _ ->
+                                            // re-enable the buttons
                                             btnLogin.isEnabled = true
                                             btnRegister.isEnabled = true
                                         }
@@ -156,13 +165,15 @@ class main_register : Fragment() {
 
                                 } else {
 
-
                                     var registerUser = auth
-
+                                    // if the account is created from the user profile, use the current user
                                     if (autoLogin != null && !autoLogin!!)
                                     {
 
-                                      // createUserWithEmailAndPassword without signing in
+                                        // createUserWithEmailAndPassword without signing in
+                                        // this is to prevent to automatically log in the user, by default it will automatically log in the user
+                                        // but we don't want that to happen, instead we will create new instance of firebase app and use that to create the user
+                                        // then dispose the instance after creating the user
                                         val signUp = FirebaseApp.initializeApp(
                                             requireContext(),
                                             Firebase.auth.app.options,
@@ -173,13 +184,14 @@ class main_register : Fragment() {
                                         Log.d("signup/update", (auth!!.currentUser).toString() +  (registerUser.currentUser).toString())
                                     }
 
-
+                                    // create the user
                                     registerUser!!.createUserWithEmailAndPassword(txtEmail.text.toString(), txtPassword.text.toString())
                                         .addOnCompleteListener { task ->
                                             if (task.isSuccessful) {
                                                 // Sign in success, update UI with the signed-in user's information
                                                 Log.d("", "createUserWithEmail:success\nUSERNAME: ${txtUsername.text}\nPASSWORD: ${txtPassword.text}")
 
+                                                // add the user to the database
                                                 databaseReference!!
                                                     .child(registerUser!!.currentUser!!.uid)
                                                     .setValue(user(
@@ -197,8 +209,10 @@ class main_register : Fragment() {
                                                             .setTitle("Creation Success")
                                                             .setMessage("Account successfully created!\nWelcome to Budget Buddy, ${txtFirstName.text}!")
                                                             .setPositiveButton("Continue") { _, _ ->
+                                                                // if the account is created from the user profile, go back to the profile
                                                                 if (autoLogin != null && !autoLogin!!)
                                                                     findNavController().popBackStack()
+                                                                // if the account is created from the login page, go to the main menu
                                                                 else
                                                                     findNavController().navigate(R.id.action_main_register_to_main_menu)
                                                             }
@@ -234,6 +248,7 @@ class main_register : Fragment() {
                                             }
 
 
+                                            // if the account is created from the user profile, sign out the current user and delete the instance of the firebase app
                                             if (autoLogin != null && !autoLogin!!)
                                             {
                                                 Log.d("signup/update", (auth!!.currentUser != null ).toString() +  (Firebase.auth!!.currentUser!!.uid != null).toString())
@@ -247,25 +262,19 @@ class main_register : Fragment() {
 
                             override fun onCancelled(databaseError: DatabaseError) {}
                         })
-
-
-
-
-
             }
-
-
-
         }
 
-
+        // go back to the login page or to the user profile
         btnLogin.setOnClickListener {
             findNavController().popBackStack()
         }
 
+        // open the date picker
         txtBirthday.setOnClickListener {
             it as TextInputEditText
 
+            // same as the date picker used for other fragments
             val constraint = CalendarConstraints.Builder()
             val calendar = Calendar.getInstance()
 
@@ -305,6 +314,7 @@ class main_register : Fragment() {
             }
         }
 
+        // make the terms and conditions clickable
         tvTermsAndConditions.makeLinks(
             Pair("Terms and Conditions", View.OnClickListener {
                 findNavController().navigate(R.id.action_main_register_to_main_termsAndConditions)
@@ -315,15 +325,19 @@ class main_register : Fragment() {
         return view
     }
 
+    // this function is used to make specific parts of the text clickable
     fun TextView.makeLinks(vararg links: Pair<String, View.OnClickListener>) {
         val spannableString = SpannableString(this.text)
         var startIndexOfLink = -1
+        // find the index of the text to be clickable
         for (link in links) {
             val clickableSpan = object : ClickableSpan() {
+                // change the color of the text to be clickable
                 override fun updateDrawState(textPaint: TextPaint) {
                     textPaint.color = textPaint.linkColor
                     textPaint.isUnderlineText = true
                 }
+                // when the text is clicked, call the onClick function
                 override fun onClick(view: View) {
                     Selection.setSelection((view as TextView).text as Spannable, 0)
                     view.invalidate()

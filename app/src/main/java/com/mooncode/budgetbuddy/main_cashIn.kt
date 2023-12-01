@@ -26,14 +26,15 @@ import java.time.LocalTime
 import java.time.ZoneId
 import kotlin.properties.Delegates
 
-
+/*
+ * This fragment is used to cash in money to the user's account.
+ */
 class main_cashIn : Fragment() {
     private lateinit var txtPhp: MaterialTextView
     private lateinit var txtSavings: MaterialTextView
     private lateinit var llHistory: LinearLayout
     private var colPrimary by Delegates.notNull<Int>()
     private lateinit var databaseEvent: ValueEventListener
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,9 +46,11 @@ class main_cashIn : Fragment() {
         var btnBack = view.findViewById<Button>(R.id.btnBack)
         val btnCashIn = view.findViewById<Button>(R.id.btnCashIn)
         val txtCashIn = view.findViewById<TextInputEditText>(R.id.textCashIn)
-        txtPhp = view.findViewById<MaterialTextView>(R.id.txtPhp)
-        txtSavings = view.findViewById<MaterialTextView>(R.id.txtSavings)
-        llHistory = view.findViewById<LinearLayout>(R.id.llHistory)
+
+        // Used to show the current money of the user
+        txtPhp = view.findViewById(R.id.txtPhp)
+        txtSavings = view.findViewById(R.id.txtSavings)
+        llHistory = view.findViewById(R.id.llHistory)
 
         colPrimary = requireContext().obtainStyledAttributes(TypedValue().data, intArrayOf(androidx.appcompat.R.attr.colorPrimary)).getColor(0, 0)
 
@@ -59,6 +62,7 @@ class main_cashIn : Fragment() {
             override fun onCancelled(error: DatabaseError) {}
         }
 
+        // Used to cash in money to the user's account
         btnCashIn.setOnClickListener {
             // check if cashIn is empty
             if (txtCashIn.text.toString().isEmpty()) {
@@ -85,19 +89,23 @@ class main_cashIn : Fragment() {
             // check if isLocked is present
             budgetGoals.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    // if isLocked is present and is equal to true
                     if (snapshot.exists() && snapshot.child("type").value.toString() == "all") {
+                        // Do not allow the user to cash in
                         MaterialAlertDialogBuilder(requireActivity())
                             .setTitle("Account Locked")
                             .setMessage("You have locked your account so you cannot proceed. Please unlock your account first.")
                             .setPositiveButton("Okay", null)
                             .setCancelable(false)
                             .show()
+                    // if isLocked is present and is equal to false
                     } else {
-
+                        // Ask the user if they are sure to cash in
                         MaterialAlertDialogBuilder(requireActivity())
                             .setTitle("Cash In")
                             .setMessage("Are you sure you want to cash in ₱%,.2f?".format(txtCashIn.text.toString().toDouble()))
                             .setPositiveButton("Yes") { _, _ ->
+                                // Set the new savings
                                 val cashIn = txtCashIn.text.toString().toDouble()
                                 val budget = databaseReference!!.child(auth!!.uid!!).child("money")
                                 budget.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -154,6 +162,7 @@ class main_cashIn : Fragment() {
 
         }
 
+        // Used to go back to the previous fragment
         btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -185,13 +194,17 @@ class main_cashIn : Fragment() {
         super.onStop()
     }
 
+    // Used to update the UI of the fragment every time the data is changed
     fun update(it: DataSnapshot){
+        // Update the current money of the user
         txtSavings.text = "%,.2f".format(it.child("money").value.toString().toDouble())
         txtSavings.animate().alpha(1f).setDuration(500).setInterpolator(
             AccelerateInterpolator()
         ).start()
+        // Animate the text, fade in
         txtPhp.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
 
+        // Update the history of the user
         llHistory.removeAllViews()
         llHistory.alpha = 0f
 
@@ -228,6 +241,7 @@ class main_cashIn : Fragment() {
 
                 llHistory.addView(llTm)
 
+                // Animate the history, fade in
                 llHistory.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
 
 

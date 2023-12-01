@@ -31,8 +31,8 @@ class main_menu : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main_menu, container, false)
 
-        txtPhp = view.findViewById<MaterialTextView>(R.id.txtPhp)
-        txtSavings = view.findViewById<MaterialTextView>(R.id.txtSavings)
+        txtPhp = view.findViewById(R.id.txtPhp)
+        txtSavings = view.findViewById(R.id.txtSavings)
         val btnCashIn = view.findViewById<Button>(R.id.btnCashIn)
         val btnCashOut = view.findViewById<Button>(R.id.btnCashOut)
         val btnCalendarGoal = view.findViewById<Button>(R.id.btnCalendarGoal)
@@ -41,7 +41,7 @@ class main_menu : Fragment() {
         val btnTransfer = view.findViewById<Button>(R.id.btnTransfer)
         val btnProfile = view.findViewById<Button>(R.id.btnProfile)
 
-
+        // database event listener
         databaseEvent =  object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("Firebase", "Data changed")
@@ -55,32 +55,42 @@ class main_menu : Fragment() {
             }
         }
 
-
-
+        // proceed to cash in fragment
         btnCashIn.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_cashIn)
         }
+
+        // proceed to cash out fragment
         btnCashOut.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_cashOut)
         }
+
+        // proceed to calendar goal fragment
         btnCalendarGoal.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_calendarGoal)
         }
+
+        // proceed to budget goal fragment
         btnBudgetGoal.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_budgetGoal)
         }
+
+        // proceed to lock fragment
         btnLock.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_lock)
         }
 
+        // proceed to transfer fragment
         btnTransfer.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_transfer)
         }
 
+        // proceed to profile fragment
         btnProfile.setOnClickListener {
             findNavController().navigate(R.id.action_main_menu_to_main_profile)
         }
 
+        // back button confirmation
         requireActivity()
             .onBackPressedDispatcher
             .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -96,8 +106,6 @@ class main_menu : Fragment() {
                         .show()
                 }
             })
-
-
 
 
         return view

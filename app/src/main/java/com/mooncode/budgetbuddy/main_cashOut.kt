@@ -1,6 +1,7 @@
 package com.mooncode.budgetbuddy
 
 import android.content.res.TypedArray
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
@@ -46,10 +48,11 @@ class main_cashOut : Fragment() {
         val btnCashOut = view.findViewById<Button>(R.id.btnCashOut)
         val txtCashOut = view.findViewById<TextInputEditText>(R.id.textCashOut)
         val txtReason = view.findViewById<TextInputEditText>(R.id.textReason)
-        llHistory = view.findViewById<LinearLayout>(R.id.llHistory)
-        txtPhp = view.findViewById<MaterialTextView>(R.id.txtPhp)
-        txtSavings = view.findViewById<MaterialTextView>(R.id.txtSavings)
-        colPrimary = requireContext().obtainStyledAttributes(TypedValue().data, intArrayOf(androidx.appcompat.R.attr.colorPrimary)).getColor(0, 0)
+
+        llHistory = view.findViewById(R.id.llHistory)
+        txtPhp = view.findViewById(R.id.txtPhp)
+        txtSavings = view.findViewById(R.id.txtSavings)
+        colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary, Color.BLACK)
 
         databaseEvent = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -81,6 +84,7 @@ class main_cashOut : Fragment() {
                     .setCancelable(false)
                     .show()
                 return@setOnClickListener
+            // if reason is empty
             } else if (txtReason.text.toString().isEmpty()) {
                 MaterialAlertDialogBuilder(requireActivity())
                     .setTitle("No Reason")
@@ -96,7 +100,9 @@ class main_cashOut : Fragment() {
             // check if isLocked is present
             budgetGoals.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    // if isLocked is present
                     if (snapshot.exists()) {
+                        // Do not allow cash out if account is locked
                         MaterialAlertDialogBuilder(requireActivity())
                             .setTitle("Account Locked")
                             .setMessage("You have locked your account for spending your savings. Please unlock first to continue.")
@@ -105,7 +111,7 @@ class main_cashOut : Fragment() {
                             .show()
 
                     } else {
-
+                        // Confirm cash out
                         MaterialAlertDialogBuilder(requireActivity())
                             .setMessage(
                                 "Are you sure you want to cash out ₱%,.2f?".format(
@@ -113,7 +119,7 @@ class main_cashOut : Fragment() {
                                 )
                             )
                             .setPositiveButton("Yes") { _, _ ->
-
+                                // Set the new savings
                                 val cashOut = txtCashOut.text.toString().toDouble()
                                 val budget = databaseReference!!.child(auth!!.uid!!).child("money")
                                 budget.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -194,7 +200,7 @@ class main_cashOut : Fragment() {
 
         }
 
-
+        // go back to main
         btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
@@ -227,13 +233,17 @@ class main_cashOut : Fragment() {
     }
 
 
+    // update the savings and history
     fun update(it: DataSnapshot){
+        // update savings
         txtSavings.text = "%,.2f".format(it.child("money").value.toString().toDouble())
         txtSavings.animate().alpha(1f).setDuration(500).setInterpolator(
             AccelerateInterpolator()
         ).start()
+        // animate savings, fade in
         txtPhp.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
 
+        // update history
         llHistory.removeAllViews()
         llHistory.alpha = 0f
 
@@ -278,6 +288,7 @@ class main_cashOut : Fragment() {
                 llHistory.addView(llTm)
                 llHistory.addView(histReasonView)
 
+                // animate history, fade in
                 llHistory.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
 
 

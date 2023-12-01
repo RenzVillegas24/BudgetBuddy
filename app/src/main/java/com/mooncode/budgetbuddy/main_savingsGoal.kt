@@ -39,6 +39,10 @@ class main_savingsGoal : Fragment() {
     private lateinit var selectedSavingsGoal: LinearLayout
     private lateinit var databaseEvent: ValueEventListener
 
+    @ColorInt private var colPrimary = 0
+    @ColorInt private var colSub = 0
+    @ColorInt private var colTextPrimary = 0
+    @ColorInt private var colTextSub = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,28 +78,16 @@ class main_savingsGoal : Fragment() {
         // set the calendar to range selection mode
         val pager = ((((calendarView.children.elementAt(0) as PagerContainer).children.first() as CustomPager).adapter) as PagerIndicatorAdapter)
 
-        val colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary  , Color.BLACK)
+        colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary  , Color.BLACK)
+        colSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorSecondaryContainer, Color.BLACK)
+        colTextPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorOnPrimary, Color.BLACK)
+        colTextSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorOnSecondaryContainer, Color.BLACK)
 
-        @ColorInt val colSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorSecondaryContainer, Color.BLACK)
-
-
-
+        // set the color of the pager
         pager.defaultButtonBackgroundColor = colSub
         pager.selectedButtonBackgroundColor = colPrimary
-
-        // check if the window is in light or dark mode
-        when (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) {
-            android.content.res.Configuration.UI_MODE_NIGHT_YES -> {
-                pager.defaultButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_dark)
-                pager.selectedButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_light)
-            }
-            android.content.res.Configuration.UI_MODE_NIGHT_NO -> {
-                pager.defaultButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_light)
-                pager.selectedButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_dark)
-            }
-        }
-
-
+        pager.defaultButtonTextColor = colTextSub
+        pager.selectedButtonTextColor = colTextPrimary
 
 
 
@@ -120,25 +112,21 @@ class main_savingsGoal : Fragment() {
         }
 
 
-
+        // same as the one in main_budgetGoal
         calendarView.addOnRangeSelectedListener(object: OnRangeSelectedListener {
             override fun onRangeSelected(widget: MaterialCalendarView, dates: List<CalendarDay>) {
-//                updateListGoals()
-
                 txtSelectedDate.text = dateGroup(calendarView.selectedDates.map { itt -> itt.date.time})
             }
         })
 
         calendarView.addOnDateChangedListener(object: OnDateSelectedListener {
             override fun onDateSelected(widget: MaterialCalendarView, date: CalendarDay, selected: Boolean) {
-//                updateListGoals()
-
                 txtSelectedDate.text = dateGroup(calendarView.selectedDates.map { itt -> itt.date.time})
             }
         })
 
 
-
+        // same as the one in main_budgetGoal
         btnAdd.setOnClickListener {
             // add the goal to the database
             if (calendarView.selectedDates.isEmpty()){
@@ -167,6 +155,7 @@ class main_savingsGoal : Fragment() {
 
             } else {
                 for (d in calendarView.selectedDates) {
+                    // add the goal to the database
                     databaseReference!!
                         .child(auth!!.currentUser!!.uid)
                         .child("goals")
@@ -198,6 +187,7 @@ class main_savingsGoal : Fragment() {
     }
 
 
+    // update the list of goals
     fun updateLst(data: DataSnapshot){
 
         // dictionary of goals and list of dates
@@ -205,16 +195,14 @@ class main_savingsGoal : Fragment() {
         val listUpcomingGoals = mutableMapOf<Double, List<Long>>()
         val listMissedGoal = mutableMapOf<Double, List<Long>>()
 
-        val colPrimary = requireContext().obtainStyledAttributes(TypedValue().data, intArrayOf(androidx.appcompat.R.attr.colorPrimary)).getColor(0, 0)
-
+        // remove all views
         selectedSavingsGoal.removeAllViews()
-
         selectedSavingsGoal.alpha = 0F
 
         val savings = data.child("goals").child("savings")
         val histCashIn = data.child("history").child("cashIn")
 
-
+        // if there are savings goal
         if (savings.exists()) {
             savings.children.forEach { itd ->
                 val d = itd.key.toString()
@@ -257,8 +245,7 @@ class main_savingsGoal : Fragment() {
 
             }
 
-
-
+            // add the upcoming goals
             if (listUpcomingGoals.isNotEmpty()){
                 val txtCompleted = TextView(requireContext())
                 txtCompleted.text = "Upcoming Goals"
@@ -302,6 +289,7 @@ class main_savingsGoal : Fragment() {
                 selectedSavingsGoal.addView(txtDate)
             }
 
+            // add the completed goals
             if (listGoalCompleted.isNotEmpty()){
                 val txtCompleted = TextView(requireContext())
                 txtCompleted.text = "Completed Goals"
@@ -353,6 +341,7 @@ class main_savingsGoal : Fragment() {
                 selectedSavingsGoal.addView(txtDate)
             }
 
+            // add the missed goals
             if (listMissedGoal.isNotEmpty()){
                 val txtCompleted = TextView(requireContext())
                 txtCompleted.text = "Missed Goals"
@@ -404,6 +393,7 @@ class main_savingsGoal : Fragment() {
 
         }
 
+        // animate the view
         selectedSavingsGoal.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
     }
 

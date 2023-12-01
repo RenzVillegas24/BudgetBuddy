@@ -49,10 +49,12 @@ class main_profile : Fragment() {
         txtEmail.alpha = 0f
         txtUsername.alpha = 0f
 
+        // database event listener
         databaseEvent = object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("Firebase", "Data changed")
 
+                // update the user informations
                 txtFullName.text = "${snapshot.child("lastName").value.toString()}, ${snapshot.child("firstName").value.toString()} ${snapshot.child("middleName").value.toString()}"
                 txtBirthday.text = SimpleDateFormat("MMMM dd, yyyy").format(snapshot.child("birthdayMillis").value.toString().toLong())
                 txtAddress.text = snapshot.child("address").value.toString()
@@ -60,6 +62,7 @@ class main_profile : Fragment() {
                 txtEmail.text = snapshot.child("email").value.toString()
                 txtUsername.text = snapshot.child("username").value.toString()
 
+                // fade in animation
                 txtFullName.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
                 txtBirthday.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
                 txtAddress.animate().alpha(1f).setDuration(500).setInterpolator(AccelerateInterpolator()).start()
@@ -74,23 +77,27 @@ class main_profile : Fragment() {
         }
 
 
-
+        // go back to previous fragment
         btnBack.setOnClickListener {
             findNavController().popBackStack()
         }
 
+        // navigate to update profile fragment
         btnUpdateProfile.setOnClickListener {
             findNavController().navigate(R.id.action_main_profile_to_main_accountUpdate)
         }
 
+        // navigate to change password fragment
         btnChangePassword.setOnClickListener {
             findNavController().navigate(R.id.action_main_profile_to_main_updatePassword)
         }
 
+        // navigate to delete account fragment
         btnDeleteAccount.setOnClickListener {
             findNavController().navigate(R.id.action_main_profile_to_main_removeAccount)
         }
 
+        // navigate to register fragment
         btnRegisterAccount.setOnClickListener {
             findNavController().navigate(R.id.action_main_profile_to_main_register, Bundle().apply {
                 putBoolean("autoLogin", false)
@@ -99,6 +106,7 @@ class main_profile : Fragment() {
 
         }
 
+        // logout
         btnLogout.setOnClickListener {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Logout Confirmation")

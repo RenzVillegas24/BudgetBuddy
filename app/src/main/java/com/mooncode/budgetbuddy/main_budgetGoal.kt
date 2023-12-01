@@ -33,11 +33,23 @@ import com.shuhart.materialcalendarview.indicator.pager.PagerContainer
 import com.shuhart.materialcalendarview.indicator.pager.PagerIndicatorAdapter
 import java.text.SimpleDateFormat
 
-
+/**
+ * A simple [Fragment] subclass.
+ * Use the [main_budgetGoal.newInstance] factory method to
+ * create an instance of this fragment.
+ *
+ * This fragment is used to set a budget goal
+ */
 class main_budgetGoal : Fragment() {
     private lateinit var selectedBudgetGoal: LinearLayout
     private lateinit var databaseEvent: ValueEventListener
 
+    @ColorInt private var colPrimary = 0
+    @ColorInt private var colSub = 0
+    @ColorInt private var colTextPrimary = 0
+    @ColorInt private var colTextSub = 0
+
+    // Override the onCreateView method to inflate the proper view
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,22 +57,24 @@ class main_budgetGoal : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_main_budget_goal, container, false)
 
+        // Get all the elements from the view
         val btnBack = view.findViewById<Button>(R.id.btnBack)
         val btnAdd = view.findViewById<Button>(R.id.btnAdd)
-
         val calendarView = view.findViewById<MaterialCalendarView>(R.id.calendarBudget)
         val spinnerCalendarSelectionMode = view.findViewById<AutoCompleteTextView>(R.id.spinnerCalendarSelectionMode)
         val txtSelectedDate = view.findViewById<TextView>(R.id.txtSelectedDate)
         val txtBudgetGoal = view.findViewById<TextView>(R.id.txtBudgetGoal)
-        selectedBudgetGoal = view.findViewById<LinearLayout>(R.id.selectedBudgetGoal)
 
+        selectedBudgetGoal = view.findViewById(R.id.selectedBudgetGoal)
         val array = arrayOf("Single", "Range", "Multiple")
 
+        // set the calendar to range selection mode
         spinnerCalendarSelectionMode.setAdapter(ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, array))
         spinnerCalendarSelectionMode.setText(array[0], false)
 
-        // on change text
+        // on change text listener
         spinnerCalendarSelectionMode.doOnTextChanged { text, start, before, count ->
+            // change the calendar selection mode
             when (text.toString()) {
                 "Single" -> calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_SINGLE
                 "Range" -> calendarView.selectionMode = MaterialCalendarView.SELECTION_MODE_RANGE
@@ -73,28 +87,20 @@ class main_budgetGoal : Fragment() {
         // set the calendar to range selection mode
         val pager = ((((calendarView.children.elementAt(0) as PagerContainer).children.first() as CustomPager).adapter) as PagerIndicatorAdapter)
 
-        val colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary  , Color.BLACK)
-        @ColorInt val colSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorSecondaryContainer, Color.BLACK)
+        // get the color of the primary and secondary color based on Material You
+        colPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorPrimary, Color.BLACK)
+        colSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorSecondaryContainer, Color.BLACK)
+        colTextPrimary = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorOnPrimary, Color.BLACK)
+        colTextSub = MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorOnSecondaryContainer, Color.BLACK)
 
+        // set the color of the pager
         pager.defaultButtonBackgroundColor = colSub
         pager.selectedButtonBackgroundColor = colPrimary
-
-        // check if the window is in light or dark mode
-        when (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) {
-            android.content.res.Configuration.UI_MODE_NIGHT_YES -> {
-                pager.defaultButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_dark)
-                pager.selectedButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_light)
-            }
-            android.content.res.Configuration.UI_MODE_NIGHT_NO -> {
-                pager.defaultButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_light)
-                pager.selectedButtonTextColor = resources.getColor(com.shuhart.materialcalendarview.R.color.mcv_text_date_dark)
-            }
-        }
+        pager.defaultButtonTextColor = colTextSub
+        pager.selectedButtonTextColor = colTextPrimary
 
 
-
-
-
+        // update the UI
         databaseReference!!
             .child(auth!!.currentUser!!.uid)
             .get()
@@ -102,47 +108,55 @@ class main_budgetGoal : Fragment() {
                 updateLst(it)
             }
 
+
+        // Store the database event listener
+        // This is used to add/remove the event listener when the fragment is stopped
+        // Used for updating the UI when the data from the firebase is changed
         databaseEvent = object: ValueEventListener {
+            // This function is called when the data is changed
             override fun onDataChange(snapshot: DataSnapshot) {
                 Log.d("Firebase", "Data changed")
                 updateLst(snapshot)
             }
 
+            // This function is called when there is an error
             override fun onCancelled(error: DatabaseError) {
                 Log.e("Firebase", error.message)
             }
         }
 
 
-
+        // function to group the dates
         calendarView.addOnRangeSelectedListener(object: OnRangeSelectedListener {
             override fun onRangeSelected(widget: MaterialCalendarView, dates: List<CalendarDay>) {
-//                updateListGoals()
-
+                // group the dates
                 txtSelectedDate.text = dateGroup(calendarView.selectedDates.map { itt -> itt.date.time})
             }
         })
 
+        // function to group the dates
         calendarView.addOnDateChangedListener(object: OnDateSelectedListener {
             override fun onDateSelected(widget: MaterialCalendarView, date: CalendarDay, selected: Boolean) {
-//                updateListGoals()
-
+                // group the dates
                 txtSelectedDate.text = dateGroup(calendarView.selectedDates.map { itt -> itt.date.time})
             }
         })
 
 
-
+        // Add the on click listener to the add button
         btnAdd.setOnClickListener {
-            // add the goal to the database
+            // check if the date is empty
             if (calendarView.selectedDates.isEmpty()){
+                // show an error dialog
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Invalid date!")
                     .setMessage("Please select a date!")
                     .setPositiveButton("OK", null)
                     .setCancelable(false)
                     .show()
+            // check if the budget goal is empty or less than 5
             } else if (txtBudgetGoal.text.toString().isEmpty() || txtBudgetGoal.text.toString().toDouble() <= 5){
+                // show an error dialog
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Invalid budget goal!")
                     .setMessage("Please enter budget goal!\nMinimum of ₱ 5.00")
@@ -150,8 +164,9 @@ class main_budgetGoal : Fragment() {
                     .setCancelable(false)
                     .show()
 
-                // check if selected dates has past
+            // check if selected dates has past
             } else if (calendarView.selectedDates.any { it.date.time < System.currentTimeMillis() }){
+                // show an error dialog
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Invalid date!")
                     .setMessage("Please select a date in the future!")
@@ -160,7 +175,9 @@ class main_budgetGoal : Fragment() {
                     .show()
 
             } else {
+                // add the budget goal to the database
                 for (d in calendarView.selectedDates) {
+                    // in every date, add the budget goal
                     databaseReference!!
                         .child(auth!!.currentUser!!.uid)
                         .child("goals")
@@ -169,9 +186,9 @@ class main_budgetGoal : Fragment() {
                         .setValue(hashMapOf(
                             "price" to txtBudgetGoal.text.toString()
                         ))
-
                 }
 
+                // show a success dialog
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Success!")
                     .setMessage("Saving goal added!")
@@ -179,10 +196,11 @@ class main_budgetGoal : Fragment() {
                     .setCancelable(false)
                     .show()
             }
-
         }
 
+        // Add the on click listener to the back button
         btnBack.setOnClickListener {
+            // go back to the previous fragment
             findNavController().popBackStack()
         }
 
@@ -190,7 +208,7 @@ class main_budgetGoal : Fragment() {
 
     }
 
-
+    // function to show the history of the budget goals
     private fun updateLst(data: DataSnapshot){
         // check if the user is still in the fragment
 
@@ -199,17 +217,18 @@ class main_budgetGoal : Fragment() {
         val listGoalUpcomingGoals = mutableMapOf<Double, List<Long>>()
         val listExceededGoal = mutableMapOf<Double, List<Long>>()
 
-        val colPrimary = requireContext().obtainStyledAttributes(TypedValue().data, intArrayOf(androidx.appcompat.R.attr.colorPrimary)).getColor(0, 0)
 
+        // clear the selectedBudgetGoal
         selectedBudgetGoal.removeAllViews()
-
+        // for the animation, set the alpha to 0
         selectedBudgetGoal.alpha = 0F
-
 
         val budget = data.child("goals").child("budget")
         val histCashOut = data.child("history").child("cashOut")
 
+        // check if the budget goal exists
         if (budget.exists()) {
+            // loop through the budget goals
             budget.children.forEach { itd ->
                 val d = itd.key.toString()
 
@@ -218,21 +237,26 @@ class main_budgetGoal : Fragment() {
                 // add a gridlayout child on selectedBudgetGoal
                 val price = data.child("goals").child("budget").child(d).child("price").value.toString().toDouble()
 
+                // check if the date is in the history
                 if (histCashOut.child(d).exists()) {
                     // check if the price is greater than the sum of the cashOut
                     if (price >= histCashOut.child(d).children.map { itt -> itt.child("value").value.toString().toDouble() }.sum()) {
+                        // add the price to the existing list
                         if (listFullfilledGoals.containsKey(price))
                             listFullfilledGoals[price] = listFullfilledGoals[price]!! + listOf(d.toLong())
+                        // if the price is not in the list, create a new list
                         else
                             listFullfilledGoals[price] = listOf(d.toLong())
                     } else {
+                        // add the price to the existing list
                         if (listExceededGoal.containsKey(price))
                             listExceededGoal[price] = listExceededGoal[price]!! + listOf(d.toLong())
+                        // if the price is not in the list, create a new list
                         else
                             listExceededGoal[price] = listOf(d.toLong())
                     }
-
                 }
+
                 // check if the d is in the past
                 else if (d.toLong() < System.currentTimeMillis()){
                     if (listExceededGoal.containsKey(price))
@@ -247,12 +271,11 @@ class main_budgetGoal : Fragment() {
                     else
                         listGoalUpcomingGoals[price] = listOf(d.toLong())
                 }
-
-
             }
 
+            // Set the group of goals
 
-
+            // For the upcoming goals label
             if (listGoalUpcomingGoals.isNotEmpty()){
                 val txtCompleted = TextView(requireContext())
                 txtCompleted.text = "Upcoming Goals"
@@ -266,6 +289,7 @@ class main_budgetGoal : Fragment() {
                 selectedBudgetGoal.addView(txtCompleted)
             }
 
+            // For the upcoming goals dates
             listGoalUpcomingGoals.forEach {it2 ->
                 val price = it2.key
                 val date = it2.value
@@ -296,6 +320,7 @@ class main_budgetGoal : Fragment() {
                 selectedBudgetGoal.addView(txtDate)
             }
 
+            // For the fullfilled goals label
             if (listFullfilledGoals.isNotEmpty()){
                 val txtCompleted = TextView(requireContext())
                 txtCompleted.text = "Fullfilled Goals"
@@ -307,6 +332,7 @@ class main_budgetGoal : Fragment() {
 
                 selectedBudgetGoal.addView(txtCompleted)
             }
+
 
             listFullfilledGoals.forEach {it2 ->
                 val price = it2.key
@@ -344,6 +370,7 @@ class main_budgetGoal : Fragment() {
                 selectedBudgetGoal.addView(txtDate)
             }
 
+            // For the exceeded goals label
             if (listExceededGoal.isNotEmpty()){
                 val txtCompleted = TextView(requireContext())
                 txtCompleted.text = "Exceeded Goals"
@@ -356,6 +383,7 @@ class main_budgetGoal : Fragment() {
                 selectedBudgetGoal.addView(txtCompleted)
             }
 
+            // For the exceeded goals dates
             listExceededGoal.forEach {it2 ->
                 val price = it2.key
                 val date = it2.value
@@ -398,7 +426,6 @@ class main_budgetGoal : Fragment() {
 
     }
 
-
     override fun onStart() {
         databaseReference!!
             .child(auth!!.currentUser!!.uid)
@@ -416,6 +443,7 @@ class main_budgetGoal : Fragment() {
         super.onStop()
     }
 
+    // Convert the dp to float
     private fun Float.dpToFloat(): Float {
         val metrics = requireContext().resources.displayMetrics
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, metrics)
